@@ -48,7 +48,7 @@ public class ImageServiceService extends Service
             @Override
             public void run() {
                 try {
-                    InetAddress serverAddress = InetAddress.getByName("132.70.66.46");
+                    InetAddress serverAddress = InetAddress.getByName("10.0.2.2");
 
                     connectionSocket = new Socket(serverAddress, 8600);
                     try {
