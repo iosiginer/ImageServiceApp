@@ -123,7 +123,7 @@ public class ImageServiceService extends Service
             public void run() {
 
                 //get the image files
-                File dcim = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Camera");
+                File dcim = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
                 if (dcim != null) {
 
                     File[] images = dcim.listFiles();
