@@ -43,7 +43,6 @@ public class ImageServiceService extends Service
 {
 
     private Socket connectionSocket;
-    private OutputStream connectionOutputStream;
 
     @Override
     public void onCreate() {
@@ -59,12 +58,6 @@ public class ImageServiceService extends Service
                     InetAddress serverAddress = InetAddress.getByName("10.0.2.2");
 
                     connectionSocket = new Socket(serverAddress, 8001);
-                    try {
-                        //if the socket creation hasn't failed yet
-                        connectionOutputStream = connectionSocket.getOutputStream();
-                    } catch (Exception e) {
-                        Log.e("TCP", "S: Error: ", e);
-                    }
                 } catch (Exception e) {
                     Log.e("TCP", "S: Error: ", e);
                 }
@@ -106,6 +99,7 @@ public class ImageServiceService extends Service
                 }
             }
         };
+        //Registering the wifi receiver
         this.registerReceiver(receiver, filter);
 
         return START_STICKY;
@@ -126,6 +120,9 @@ public class ImageServiceService extends Service
         return null;
     }
 
+    /**
+     * The function responsible to transfer pictures to the service
+     */
     public void startTransfer() {
         Toast.makeText(this, "Wi-Fi connected!", Toast.LENGTH_LONG).show();
         Thread thread = new Thread(new Runnable() {
@@ -152,8 +149,12 @@ public class ImageServiceService extends Service
         thread.start();
     }
 
+    /**
+     * The function gets the images and sending them to the service
+     * @param allImages the images from the camera
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void sendAllImages(List<File> allPhotos) {
+    private void sendAllImages(List<File> allImages) {
         int progressCounter = 0;
         final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationChannel channel = new NotificationChannel("default",
@@ -166,14 +167,14 @@ public class ImageServiceService extends Service
                 .setPriority(NotificationCompat.PRIORITY_LOW);
         builder.setSmallIcon(R.drawable.ic_launcher_background);
         final int notify_id = 1;
-        for(File image : allPhotos) {
+        for(File image : allImages) {
             progressCounter++;
             try {
                 sendImage(image);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            builder.setProgress(allPhotos.size(), progressCounter, false);
+            builder.setProgress(allImages.size(), progressCounter, false);
             notificationManager.notify(notify_id, builder.build());
 
         }
@@ -181,13 +182,13 @@ public class ImageServiceService extends Service
         builder.setContentText("Download Complete...");
         notificationManager.notify(notify_id, builder.build());
 
-        // When done, update the notification one more time to remove the progress bar
-        builder.setContentText("Download complete")
-                .setProgress(0,0,false);
-        notificationManager.notify(notify_id, builder.build());
-
     }
 
+    /**
+     * The function getting image and send it to the service
+     * @param image - solo image
+     * @throws IOException - throwing exception when there is problem with the connection/sending
+     */
     private void sendImage(File image) throws IOException {
         DataOutputStream dataStream=new DataOutputStream(connectionSocket.getOutputStream());
         OutputStream outStream = connectionSocket.getOutputStream();
@@ -209,6 +210,11 @@ public class ImageServiceService extends Service
         return stream.toByteArray();
     }
 
+    /**
+     * The function searching recursively for all photos from a folder and its sub folders
+     * @param file a folder or a file
+     * @return
+     */
     private List<File> collectPhotosFromFolder(File file) {
         List<File> photos = new ArrayList<>();
         if (!file.isDirectory()) {
@@ -224,6 +230,9 @@ public class ImageServiceService extends Service
         return photos;
     }
 
+    /**
+     * The function disconnect the server
+     */
     private void disconnect() {
         try {
             connectionSocket.close();

@@ -34,7 +34,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    /**
+     * The function starting the service of the android after clicking on the startService button
+     * @param view - the view of the app
+     */
     public void startService(View view) {
         Button btn = (Button) findViewById(R.id.buttonStart);
         btn.setEnabled(false);
@@ -44,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
         startService(intent);
     }
 
+    /**
+     * The function stopping the service of the android after clicking on the stopService button
+     * @param view - the view of the app
+     */
     public void stopService(View view) {
         Button btn = (Button) findViewById(R.id.buttonStart);
         btn.setEnabled(true);
