@@ -31,7 +31,7 @@ public class TcpConnection {
                 try {
                     InetAddress serverAddress = InetAddress.getByName("10.0.2.2");
 
-                    connectionSocket = new Socket(serverAddress, 8600);
+                    connectionSocket = new Socket(serverAddress, 8000);
                     try {
                         //if the socket creation hasn't failed yet
                         connectionOutputStream = connectionSocket.getOutputStream();
